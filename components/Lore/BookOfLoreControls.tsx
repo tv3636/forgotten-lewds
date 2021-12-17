@@ -155,19 +155,6 @@ const LoreSocialContainer = ({
           <ResponsivePixelImg src="/static/img/icons/social_twitter_default_w.png" />
         </a>
       </SocialItem>
-      <SocialItem>
-        <a href={gmUrl} className="icon-link gm" target="_blank">
-          <ResponsivePixelImg
-            src="/static/img/icons/gm.png"
-            className="gm-img"
-          />
-        </a>
-      </SocialItem>
-      <SocialItem>
-        <a href={downloadUrl} className="icon-link" target="_blank">
-          <ResponsivePixelImg src="/static/img/icons/social_download_default_w.png" />
-        </a>
-      </SocialItem>
     </SocialContainer>
   );
 };
@@ -246,11 +233,6 @@ export default function BookOfLoreControls({
           )}
         </NextPageContainer>
       </PaginationContainer>
-      <WriteContainer>
-        <Link href="/lore/add" passHref={true}>
-          <WriteButton size="medium">Write Your Lore</WriteButton>
-        </Link>
-      </WriteContainer>
     </BookOfLoreControlsElement>
   );
 }

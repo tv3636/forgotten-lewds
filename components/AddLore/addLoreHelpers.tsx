@@ -505,7 +505,7 @@ export const getPendingLoreTxHashRedirection = async ({
   const { data } = await client.query({
     query: gql`
           query Lore{
-              lores(where: { struck: false, nsfw: false, txHash: "${waitForTxHash}" }) {
+              lores(where: { struck: false, nsfw: true, txHash: "${waitForTxHash}" }) {
                   id
                   index
                   txHash
@@ -519,7 +519,7 @@ export const getPendingLoreTxHashRedirection = async ({
     const { data: wizardPageCount } = await client.query({
       query: gql`
           query Lore {
-              lores( where: {tokenId: "${tokenId}", tokenContract: "${tokenAddress.toLowerCase()}", struck: false, nsfw: false}) {
+              lores( where: {tokenId: "${tokenId}", tokenContract: "${tokenAddress.toLowerCase()}", struck: false, nsfw: true}) {
                   id
               }
           }

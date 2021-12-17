@@ -191,7 +191,7 @@ export const LogoToggleRow = styled.div`
   }
 `;
 
-export default function SiteNav({}: Props) {
+export default function SiteNav() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
@@ -245,37 +245,9 @@ export default function SiteNav({}: Props) {
       <SiteNavRow>
         <ul className={"menu" + (isOpen ? " active" : "")}>
           <li className="item">
-            <a href="/">The Secret Tower</a>
-          </li>
-          <li className="item">
-            <Link as={"/wtf"} href={"/wtf"} passHref={true}>
-              Start Here
-            </Link>
+            <a href="/"></a>
           </li>
 
-          <li className="item">
-            <Link as={"/lore"} href={"/lore"} passHref={true}>
-              <a>Book of Lore</a>
-            </Link>
-          </li>
-
-          <li className="item">
-            <Link as={"/map"} href={"/map"} passHref={true}>
-              <a>Map</a>
-            </Link>
-          </li>
-
-          <li className="item">
-            <Link as={"/gallery"} href={"/gallery"} passHref={true}>
-              <a>All Wizards</a>
-            </Link>
-          </li>
-
-          <li className="item">
-            <Link as={"/posts"} href={"/posts"} passHref={true}>
-              <a>Blog</a>
-            </Link>
-          </li>
         </ul>
       </SiteNavRow>
     </SiteNavElement>

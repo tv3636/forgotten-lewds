@@ -13,7 +13,7 @@ type Props = {
 const Layout = ({
   children,
   description,
-  title = "Forgotten Runes Wizard's Cult: 10,000 on-chain Wizard NFTs",
+  title = "Forgotten Runes Wizard's Cult NSFW Book of Lore",
 }: Props) => (
   <div>
     <Head>
@@ -39,7 +39,6 @@ const Layout = ({
     <SiteNav />
     <header></header>
     {children}
-    <Footer />
   </div>
 );
 

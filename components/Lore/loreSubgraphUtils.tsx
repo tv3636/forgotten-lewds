@@ -77,6 +77,7 @@ export async function getLoreInChapterForm(
     ) {
       results = cachedData.data;
       console.log("Using cached data for lore yay!");
+      console.log(LORE_CACHE);
     }
   } catch (e) {
     /* not fatal */
@@ -93,7 +94,7 @@ export async function getLoreInChapterForm(
                 tokenContract
                 tokenId
                 lore(
-                    where: { struck: false, nsfw: false }
+                    where: { struck: false, nsfw: true }
                     orderBy: id
                     orderDirection: asc
                 ) {
@@ -104,8 +105,7 @@ export async function getLoreInChapterForm(
     `,
       fetchPolicy: "no-cache",
     });
-
-    results = (data?.loreTokens ?? []).map((loreTokenEntry: any) => {
+    results = (data?.loreTokens.filter((token: any) => token.lore.length > 0) ?? []).map((loreTokenEntry: any) => {
       return {
         tokenId: parseInt(loreTokenEntry.tokenId),
         lore: loreTokenEntry.lore.map((loreEntry: any) => ({

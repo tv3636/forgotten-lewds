@@ -1,9 +1,9 @@
-import Layout from "../../../../components/Layout";
+import Layout from "../../../components/Layout";
 import { GetStaticPropsContext } from "next";
-import Book from "../../../../components/Lore/Book";
-import { LorePageData } from "../../../../components/Lore/types";
-import LoreSharedLayout from "../../../../components/Lore/LoreSharedLayout";
-import OgImage from "../../../../components/OgImage";
+import Book from "../../../components/Lore/Book";
+import { LorePageData } from "../../../components/Lore/types";
+import LoreSharedLayout from "../../../components/Lore/LoreSharedLayout";
+import OgImage from "../../../components/OgImage";
 import dynamic from "next/dynamic";
 
 import {
@@ -12,18 +12,18 @@ import {
   getLeftRightPages,
   getLoreInChapterForm,
   getWizardsWithLore,
-} from "../../../../components/Lore/loreSubgraphUtils";
-import { CHARACTER_CONTRACTS } from "../../../../contracts/ForgottenRunesWizardsCultContract";
-import { getLoreUrl } from "../../../../components/Lore/loreUtils";
+} from "../../../components/Lore/loreSubgraphUtils";
+import { CHARACTER_CONTRACTS } from "../../../contracts/ForgottenRunesWizardsCultContract";
+import { getLoreUrl } from "../../../components/Lore/loreUtils";
 import { promises as fs } from "fs";
 import path from "path";
 import { useMedia } from "react-use";
 import { useEffect, useState } from "react";
 import flatMap from "lodash/flatMap";
 
-import productionWizardData from "../../../../data/nfts-prod.json";
-import productionSoulsData from "../../../../data/souls-prod.json";
-import stagingSoulsData from "../../../../data/souls-staging.json";
+import productionWizardData from "../../../data/nfts-prod.json";
+import productionSoulsData from "../../../data/souls-prod.json";
+import stagingSoulsData from "../../../data/souls-staging.json";
 
 const soulsData = (
   parseInt(process.env.NEXT_PUBLIC_REACT_APP_CHAIN_ID ?? "1") === 4
@@ -33,7 +33,7 @@ const soulsData = (
 const wizData = productionWizardData as { [wizardId: string]: any };
 
 const WizardMapLeaflet = dynamic(
-  () => import("../../../../components/Lore/WizardMapLeaflet"),
+  () => import("../../../components/Lore/WizardMapLeaflet"),
   { ssr: false }
 );
 
