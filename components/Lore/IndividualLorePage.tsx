@@ -125,9 +125,6 @@ export const EmptyLorePage = ({ pageNum }: { pageNum: number }) => {
     <BookOfLorePage bg={"#000000"}>
       <TextPage alignSelf="center" alignChildren="center">
         <ReactMarkdown>{noMoreLore}</ReactMarkdown>
-        <Link href="/lore/add">
-          <WriteButton size="medium">Write Your Lore</WriteButton>
-        </Link>
       </TextPage>
     </BookOfLorePage>
   );
