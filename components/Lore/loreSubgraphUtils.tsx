@@ -77,7 +77,6 @@ export async function getLoreInChapterForm(
     ) {
       results = cachedData.data;
       console.log("Using cached data for lore yay!");
-      console.log(LORE_CACHE);
     }
   } catch (e) {
     /* not fatal */
@@ -87,36 +86,58 @@ export async function getLoreInChapterForm(
   if (!results) {
     console.log("No cached lore data - fetching from graph");
 
-    const { data } = await client.query({
-      query: gql`
-        query WizardLore {
-            loreTokens(first: 999, orderBy: tokenId, orderDirection: asc, where: {tokenContract: "${tokenContract}"}) {
-                tokenContract
-                tokenId
-                lore(
-                    where: { struck: false, nsfw: true }
-                    orderBy: id
-                    orderDirection: asc
-                ) {
-                    ${COMMON_LORE_FIELDS}
-                }
-            }
-        }
-    `,
-      fetchPolicy: "no-cache",
-    });
-    results = (data?.loreTokens.filter((token: any) => token.lore.length > 0) ?? []).map((loreTokenEntry: any) => {
-      return {
-        tokenId: parseInt(loreTokenEntry.tokenId),
-        lore: loreTokenEntry.lore.map((loreEntry: any) => ({
-          loreMetadataURI: loreEntry.loreMetadataURI,
-          createdAtTimestamp: loreEntry.createdAtTimestamp,
-          creator: loreEntry.creator,
-        })),
-      };
-    });
+    results = [];
+
+    // Not we optimistically fetch N lore pages at a time - this is a temporary hack as it's faster than waiting for results to then do another request etc
+    const serverGraphPagesToFetch = 3;
+    const graphResults = await Promise.all(
+      Array.from({ length: serverGraphPagesToFetch }, (_, i) =>
+        client.query({
+          query: gql`
+          query WizardLore {
+              loreTokens(skip: ${
+                i * 999
+              }, first: 999, orderBy: tokenId, orderDirection: asc, where: {tokenContract: "${tokenContract}"}) {
+                  tokenContract
+                  tokenId
+                  lore(
+                      where: { struck: false, nsfw: true }
+                      orderBy: id
+                      orderDirection: asc
+                  ) {
+                      ${COMMON_LORE_FIELDS}
+                  }
+              }
+          }
+      `,
+          fetchPolicy: "no-cache",
+        })
+      )
+    );
+    console.log(`Got ${graphResults.length} queries worth of results....`);
+
+    for (let i = 0; i < graphResults.length; i++) {
+      const loreTokens = graphResults[i]?.data?.loreTokens ?? [];
+
+      console.log(`Query ${i} had ${loreTokens.length} lore tokens`);
+
+      results.push(
+        ...(loreTokens.filter((token: any) => token.lore.length > 0) ?? []).map((loreTokenEntry: any) => {
+          return {
+            tokenId: parseInt(loreTokenEntry.tokenId),
+            lore: loreTokenEntry.lore.map((loreEntry: any) => ({
+              loreMetadataURI: loreEntry.loreMetadataURI,
+              createdAtTimestamp: loreEntry.createdAtTimestamp,
+              creator: loreEntry.creator,
+              index: loreEntry.index,
+            })),
+          };
+        })
+      );
+    }
 
     if (updateCache) {
+      console.log("Updating cache file");
       await fs.writeFile(
         cacheFile,
         JSON.stringify({ timestamp: new Date().getTime(), data: results }),
@@ -265,15 +286,18 @@ export async function getFirstAvailableWizardLoreUrl() {
   return getLoreUrl("wizards", 0, 0);
 }
 
-export async function getWizardsWithLore(): Promise<{
+export async function getWizardsWithLore(contract: string = CHARACTER_CONTRACTS.wizards): Promise<{
   [key: number]: boolean;
 }> {
-  const cacheFile = `${WIZARDS_THAT_HAVE_LORE_CACHE}`;
+  const cacheFile = isWizardsContract(contract)
+    ? WIZARDS_LORE_CACHE
+    : SOULS_LORE_CACHE;
 
-  let results;
+  let results: any = {};
 
   try {
     const cachedData = JSON.parse(await fs.readFile(cacheFile, "utf8"));
+    console.log(cacheFile);
     if (
       Math.floor((new Date().getTime() - cachedData.timestamp) / 1000 / 60) <=
       WIZARDS_THAT_HAVE_LORE_CACHE_STALE_AFTER_MINUTES // For x minutes during a deploy we keep using the file cache for lore
@@ -288,26 +312,30 @@ export async function getWizardsWithLore(): Promise<{
     );
   }
 
-  if (!results) {
+  if (Object.keys(results).length == 0) {
     try {
-      const { data } = await client.query({
-        query: gql`
-          query WizardLore {
-              loreTokens(first: 999, orderBy: tokenId, orderDirection: asc, where: {tokenContract: "${CHARACTER_CONTRACTS.wizards}"}) {
-                  tokenId
-              }
-          }`,
-      });
-
-      results = (data?.loreTokens ?? []).reduce(
-        (
-          result: {
-            [key: number]: boolean;
-          },
-          token: any
-        ) => ((result[token.tokenId] = true), result),
-        {}
+      const serverGraphPagesToFetch = 3;
+      const graphResults = await Promise.all(
+        Array.from({ length: serverGraphPagesToFetch }, (_, i) => client.query({
+          query: gql`
+            query WizardLore {
+                loreTokens(skip: ${
+                  i * 999
+                }, first: 999, orderBy: tokenId, orderDirection: asc, where: {tokenContract: "${contract}"}) {
+                    tokenId
+                }
+            }`,
+          })
+        )
       );
+      
+      console.log(`Got ${graphResults.length} queries worth of results....`);
+      for (let i = 0; i < graphResults.length; i++) {
+        const loreTokens = graphResults[i]?.data?.loreTokens ?? [];
+        for (var token of loreTokens) {
+          results[token.tokenId] = true;
+        }
+      }
 
       await fs.writeFile(
         cacheFile,
@@ -318,6 +346,7 @@ export async function getWizardsWithLore(): Promise<{
       console.error(
         "We couldn't get 'wizards that have lore' from subgraph. Continuing anyway as its non-fatal..."
       );
+      console.log(e);
       results = [];
     }
   }
