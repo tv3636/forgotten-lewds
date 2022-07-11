@@ -44,13 +44,17 @@ export async function getBookOfLoreContract({ provider }: { provider: any }) {
   );
 }
 
-export const CHARACTER_CONTRACTS = {
+export const CHARACTER_CONTRACTS: any = {
   wizards:
     process.env.NEXT_PUBLIC_REACT_APP_WIZARDS_CONTRACT_ADDRESS?.toLowerCase() ??
-    "0x",
+    "0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42",
   souls:
     process.env.NEXT_PUBLIC_REACT_APP_SOULS_CONTRACT_ADDRESS?.toLowerCase() ??
-    "0x",
+    "0x251b5f14a825c537ff788604ea1b58e49b70726f",
+  warriors: "0x9690b63eb85467be5267a3603f770589ab12dc95",
+  ponies: "0xf55b615b479482440135ebf1b907fd4c37ed9420",
+  beasts: "0x8634c23d5794ed177e9ffd55b22fdb80a505ab7b",
+  spawn: "0x7de11a2d9e9727fa5ead3094e40211c5e9cf5857",
 };
 
 export function isSoulsContract(address: string) {

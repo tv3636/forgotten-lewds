@@ -25,6 +25,13 @@ const soulsData = (
     : productionSoulsData
 ) as { [soulId: string]: any };
 
+const imageUrls: any = {
+  "0x9690b63eb85467be5267a3603f770589ab12dc95": "https://portal.forgottenrunes.com/api/warriors/img/",
+  "0xf55b615b479482440135ebf1b907fd4c37ed9420": "https://portal.forgottenrunes.com/api/shadowfax/img/",
+  "0x8634c23d5794ed177e9ffd55b22fdb80a505ab7b": "https://portal.forgottenrunes.com/api/beasts/img/",
+  "0x7de11a2d9e9727fa5ead3094e40211c5e9cf5857": "https://portal.forgottenrunes.com/api/spawn/img/",
+};
+
 export const TextPage = styled.div<{
   alignSelf?: string;
   alignChildren?: string;
@@ -107,6 +114,8 @@ export const CoreCharacterPage = ({
     const soulData: any = soulsData[tokenId.toString()];
     bg = "#" + +soulData?.background_color ?? "000000";
     imageUrl = `${process.env.NEXT_PUBLIC_SOULS_API}/api/souls/img/${tokenId}.png`;
+  } else {
+    imageUrl = `${imageUrls[tokenAddress]}${tokenId}.png`;
   }
 
   return (

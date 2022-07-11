@@ -31,6 +31,19 @@ export const NORMALIZED_WIZARD_CONTRACT_ADDRESS =
 const LORE_CACHE = path.join(os.tmpdir(), ".lore_cache");
 const WIZARDS_LORE_CACHE = LORE_CACHE + "_wizards";
 const SOULS_LORE_CACHE = LORE_CACHE + "_souls";
+const WARRIORS_LORE_CACHE = LORE_CACHE + "_warriors";
+const PONIES_LORE_CACHE = LORE_CACHE + "_ponies";
+const BEASTS_LORE_CACHE = LORE_CACHE + "_beasts";
+const SPAWN_LORE_CACHE = LORE_CACHE + "_spawn";
+
+const cacheMap: any = {
+  "0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42": WIZARDS_LORE_CACHE,
+  "0x251b5f14a825c537ff788604ea1b58e49b70726f": SOULS_LORE_CACHE,
+  "0x9690b63eb85467be5267a3603f770589ab12dc95": WARRIORS_LORE_CACHE,
+  "0xf55b615b479482440135ebf1b907fd4c37ed9420": PONIES_LORE_CACHE,
+  "0x8634c23d5794ed177e9ffd55b22fdb80a505ab7b": BEASTS_LORE_CACHE,
+  "0x7de11a2d9e9727fa5ead3094e40211c5e9cf5857": SPAWN_LORE_CACHE,
+}
 
 const WIZARDS_THAT_HAVE_LORE_CACHE = path.join(
   os.tmpdir(),
@@ -42,6 +55,10 @@ export async function bustLoreCache() {
     WIZARDS_LORE_CACHE,
     SOULS_LORE_CACHE,
     WIZARDS_THAT_HAVE_LORE_CACHE,
+    WARRIORS_LORE_CACHE,
+    PONIES_LORE_CACHE,
+    BEASTS_LORE_CACHE,
+    SPAWN_LORE_CACHE,
   ];
   for (let index in files) {
     const file = files[index];
@@ -63,9 +80,7 @@ export async function getLoreInChapterForm(
   tokenContract: string,
   updateCache: boolean = false
 ) {
-  const cacheFile = isWizardsContract(tokenContract)
-    ? WIZARDS_LORE_CACHE
-    : SOULS_LORE_CACHE;
+  const cacheFile = cacheMap[tokenContract];
 
   let results;
 
@@ -162,10 +177,7 @@ export async function getLeftRightPages(
   leftPageNum: number,
   rightPageNum: number
 ) {
-  const tokenContract =
-    loreTokenSlug === "wizards"
-      ? CHARACTER_CONTRACTS.wizards
-      : CHARACTER_CONTRACTS.souls;
+  const tokenContract = CHARACTER_CONTRACTS[loreTokenSlug];
   const loreInChapterForm = await getLoreInChapterForm(tokenContract);
 
   const chapterIndexForToken = await getIndexForToken(
