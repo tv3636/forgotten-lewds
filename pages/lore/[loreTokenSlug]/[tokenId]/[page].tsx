@@ -261,7 +261,7 @@ export async function getStaticPaths() {
     console.log(`Generating paths for ${loreTokenSlug} ${loreTokenContract}`);
 
     const loreInChapterForm = await getLoreInChapterForm(
-      loreTokenContract,
+      String(loreTokenContract),
       true
     );
 
